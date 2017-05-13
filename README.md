@@ -4,61 +4,56 @@
 * SSH Port: 2200
 * Project Link: http://ec2-54-211-202-136.compute-1.amazonaws.com/
 
-* Create a new user named grader
-    * `sudo adduser grader`
-    * optional: install finger to check user has been added `apt-get install finger`
-    * `finger grader`
+* Amazon Lightsail terminal:
+  * First, log in to Lightsail. If you don't already have an Amazon Web Services account, you'll be prompted to create one.
+  * Once you're logged in, Lightsail will give you a friendly message with a robot on it, prompting you to create an instance. A      Lightsail instance is a Linux server running on a virtual machine inside an Amazon datacenter. 
+  * Signup for Amazon Lightsail.
+  * Launch Ubuntu terminal.
+  
+* create a new user:
+  * sudo adduser grader
+  * And add the details mentioned
+  
+* Proiding grader permission
+  * sudo visudo
+  * Inside that add grader ALL=(ALL:ALL) ALL 
+  * save file
+  * Add grader to/etc/suoders.d/
+  * In it write grader ALL=(ALL:ALL) ALL
+  * Add root to /etc/sudoers.d/ and again write the above command.
 
+* Update and Upgrade
+  * sudo apt-get update
+  * sudo apt-get upgrade
 
-* Give the grader the permission to sudo
-    * `sudo visudo`
-    * inside the file add `grader   ALL=(ALL:ALL) ALL` below the root user under "#User privilege specification"
-    * save file(nano: `ctrl+x`, `Y`, Enter)
-    * Add grader to `/etc/sudoers.d/` and type in `grader   ALL=(ALL:ALL) ALL`by command `sudo nano /etc/sudoers.d/grader`
-    * Add root to `/etc/sudoers.d/` and type in `root   ALL=(ALL:ALL) ALL`by command `sudo nano /etc/sudoers.d/root`
-
-
-* Update all currently installed packages
-    * Find updates:`sudo apt-get update`
-    * Install updates:`sudo sudo apt-get upgrade` Hit Y for yes and give yourself a break while it installs.
-
-* Change the SSH port from 22 to 2200 and other SSH configuration 
-    * `nano /etc/ssh/sshd_config` add `port 2200` below `port 22`
-    * while in the file also change `PermitRootLogin prohibit-password` to `PermitRootLogin no` to disallow root login
-    * Change `PasswordAuthentication` from `no` to `yes`. We will change back after finishing SHH login setup
-    * save file(nano: `ctrl+x`, `Y`, Enter)
-    * restart ssh service`sudo service ssh reload`
-
-
+* Changing SSH config:
+  * change port number to 2200
+  * In file change PermitRootLogin prohibit-password to PermitRootLogin no to disallow root login
+  * change PasswordAuthentication to yes.
+  * save file(nano: ctrl + x, y, Enter) and restart.
+  
 * Create SSH keys and copy to server manually:
-    * On your local machine generate SSH key pair with: `ssh-keygen`
-    * save youkeygen file in your ssh directory `/home/ubuntu/.ssh/` example full file path that could be used: `/home/ubuntu/.ssh/item-catalog`
-    * You can add a password to use encase your keygen file gets compromised(you will be prompted to enter this password when you connect with key pair)
-    * Change the SSH port number configuration in Amazon lightsail in networking tab to 2200.
-    * login into grader account using password set during user creation `ssh -v grader@*Public-IP-Address* -p 2200`
-    * Make .ssh directory`mkdir .ssh`
-    * make file to store key`touch .ssh/authorized_keys`
-    * On your local machine read contents of the public key `cat .ssh/project5.pub`
-    * Copy the key and paste in the file you just created in grader `nano
-.ssh/authorized_keys` paste contents(ctr+v)
-    * save file(nano: `ctrl+x`, `Y`, Enter)
-    * Set permissions for files: `chmod 700 .ssh` `chmod 644 .ssh/authorized_keys`
-    * Change `PasswordAuthentication` from `yes` back to `no`.  `nano /etc/ssh/sshd_config`
-    * save file(nano: `ctrl+x`, `Y`, Enter)
-    * login with key pair: `ssh grader@Public-IP-Address* -p 2200 -i ~/.ssh/project5`
-
-
-
-* Configure the Uncomplicated Firewall (UFW) to only allow  incoming connections for SSH (port 2200), HTTP (port 80),  and NTP (port 123)
-    * Check UFW status to make sure its inactive`sudo ufw status`
-    * Deny all incoming by default`sudo ufw default deny incoming`
-    * Allow outgoing by default`sudo ufw default allow outgoing`
-    * Allow SSH `sudo ufw allow ssh`
-    * Allow SSH on port 2200`sudo ufw allow 2200/tcp`
-    * Allow HTTP on port 80`sudo ufw allow 80/tcp`
-    * Allow NTP on port 123`sudo ufw allow 123/udp`
-    * Turn on firewall`sudo ufw enable`
-
+   * On the local machine generate SSH key pair: ssh-keygen
+   * save the keygen file in your ssh directory /home/ubuntu/.ssh/
+   * For privacy reason you can add password
+   * Change the SSH port number configuration in Amazon lightsail in networking tab to 2200
+   * login, make .ssh directory mkdir.ssh and then make ame a file to store key /authorised_keys
+   * On your local machine read contents of the public key cat .ssh/project5.pub
+   * copy the file you created in grader nano .ssh/authorized_keys and save(ctrl + x, y, Enter)
+   * Set permissions for files: chmod 700 .ssh chmod 644 .ssh/authorized_keys
+   * Change PasswordAuthentication again to no and save file.
+   * login with key pair: ssh grader@Public-IP-Address* -p 2200 -i ~/.ssh/project5
+    
+* Configure the Uncomplicated Firewall (UFW)
+  * allow incoming connections for SSH (port 2200), HTTP (port 80), and NTP (port 123)
+  * sudo ufw status to check UFW status is inactive
+  * Deny all incoming by defaultsudo ufw default deny incoming
+  * Allow outgoing by default sudo ufw default allow outgoing
+  * Allow SSH sudo ufw allow ssh
+  * Allow SSH on port 2200 sudo ufw allow 2200/tcp
+  * Allow HTTP on port 80 sudo ufw allow 80/tcp
+  * Allow NTP on port 123 sudo ufw allow 123/udp
+  * Turn the firewallsudo ufw enable
 
 * Configure the local timezone to UTC
     * run `sudo dpkg-reconfigure tzdata` from prompt: select none of the above. Then select UTC.
